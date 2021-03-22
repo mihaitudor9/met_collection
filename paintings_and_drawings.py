@@ -32,19 +32,16 @@ df = pd.read_csv(r"C:\Users\Tudor\PycharmProjects\Intelligent\MetObjects.txt", d
     'Portfolio': str,
     'Dimensions': str
 
-}, low_memory=False, nrows=40000)
+}, low_memory=False, nrows=20000)
 
 # We are only interested in the paintings and drawings
 df = df.loc[df['Classification'].isin(['Paintings', 'Drawings'])]
-
-df.loc[:, 'Covered Area'] = 0
 
 # Re-order the columns such that <Object ID> is the first column.
 # Other reorders should follow
 df = df[
     ['Object ID', 'Department', 'AccessionYear', 'Object Name', 'Title', 'Culture',
-     'Period',
-     'Dynasty', 'Reign', 'Artist Display Name', 'Artist Nationality', 'Artist Begin Date', 'Artist End Date',
+     'Reign', 'Artist Display Name', 'Artist Nationality', 'Artist Begin Date', 'Artist End Date',
      'Artist Wikidata URL',
      'Object Begin Date', 'Object End Date', 'Medium', 'Dimensions',
      'City', 'Country', 'Classification', 'Object Wikidata URL', 'Tags']]
@@ -59,11 +56,10 @@ for column in df:
 
 # Displaying all values of the dataframe if necessary
 pd.set_option("display.max_rows", None, "display.max_columns", None)
-# df
 
 # Displaying all unique values in every column
 # for col in df:
-#    print(col, df[col].unique())
+# print(col, df[col].unique())
 
 # Clean up of the Culture column
 df['Culture'] = df['Culture'].str.replace('for export', '')
@@ -74,7 +70,7 @@ df['Culture'] = df['Culture'].str.replace(', probably', '')
 df['Culture'] = df['Culture'].str.replace(', possibly', '')
 df['Culture'] = df['Culture'].str.replace('probably', '')
 
-df.loc[:, 'Covered Area'] = 0
+df.loc[:, 'Covered Area'] = -1
 # print(tabulate(df, headers = 'keys', tablefmt = 'psql'))
 # print(df.dtypes)
 
@@ -138,29 +134,21 @@ df['Object End Date'] = pd.to_numeric(df['Object End Date'], errors='coerce')
 df['Artist Begin Date'] = pd.to_numeric(df['Artist Begin Date'], errors='coerce')
 df['Artist End Date'] = pd.to_numeric(df['Artist End Date'], errors='coerce')
 
-# I'm pretty sure this can be done in a more efficient way but still
-for index, (dimensionality, dimensions) in enumerate(zip(df['Dimensionality'], df['Dimensions'])):
-    number_dimensions = []
-    text_dimension = df.iloc[index]['Dimensions']
-    number_dimensions = [float(s) for s in re.findall(r'-?\d+\.?\d*', text_dimension)]
+for index_item, item in df.iterrows():
 
-    covered_area = np.prod(np.array(number_dimensions))
-    covered_area = round(covered_area, 2)
-    df.loc[index, 'Covered Area'] = covered_area
+    if (df['Dimensionality'][index_item] == 2):
+        number_dimensions = []
+        text_dimension = df['Dimensions'][index_item]
+        number_dimensions = [float(s) for s in re.findall(r'-?\d+\.?\d*', text_dimension)]
 
-    # print("Object ID: ", df.iloc[index]['Object ID'])
-    # print("Covered Area: ", covered_area)
-    # print("Covered Volume:" , covered_volume)
-    # print("---------------")
+        covered_area = np.prod(np.array(number_dimensions))
+        df['Covered Area'][index_item] = covered_area
 
 # Unfortunately, there are a couple dimensions that couldn't have been extracted
 # given a really bad input when the item was introduced into the DB by the employees
 # Since part of our analysis needs the area covered by each painting/drawing, we will only keep
 # the ones with a good input
 df = df[df['Dimensionality'] == 2]
-
-# Assuming we are not interested in minuscule items
-#df = df[df['Covered Area'] > 0.5]
 
 # Clean up of the Country column
 # USA -> United States
@@ -169,14 +157,6 @@ df = df[df['Dimensionality'] == 2]
 df['Country'] = df['Country'].str.replace('USA', 'United States')
 df['Country'] = df['Country'].str.replace('US', 'United States')
 df['Country'] = df['Country'].str.replace('The United States', 'United States')
-
-sns.lmplot('Object End Date', 'Covered Area', df, hue='Classification', fit_reg=False)
-plt.title("Year when the painting/drawing was finished VS area covered by the item (CM^2)")
-plt.xlabel("Year")
-plt.ylabel("CM^2")
-fig = plt.gcf()
-fig.set_size_inches(15, 10)
-plt.show()
 
 df['years_worked_item'] = df['Object End Date'] - df['Object Begin Date']
 df['years_worked_item'] = pd.to_numeric(df['years_worked_item'], errors='coerce')
@@ -189,10 +169,32 @@ df['years_lived_artist'] = pd.to_numeric(df['years_lived_artist'], errors='coerc
 # Otherwise, a few 6000 values would show up
 df = df[df['years_lived_artist'] < 120]
 
+# Assuming we are not interesting in the extremely tiny ones
+df = df[df['Covered Area'] > 10]
+
+# There's only 1 extreme outlier that we'd like removed
+df = df[df['Covered Area'] < 200000]
+
+sns.lmplot('Object End Date', 'Covered Area', df, hue='Classification', fit_reg=False)
+plt.title("Year when the painting/drawing was finished VS area covered by the item (CM^2)")
+plt.xlabel("Year")
+plt.ylabel("CM^2")
+fig = plt.gcf()
+fig.set_size_inches(15, 10)
+plt.show()
+
 sns.lmplot('Artist Begin Date', 'years_lived_artist', df, fit_reg=False)
 plt.title("Year of birth VS Years lived in total by artist")
 plt.xlabel("Year of birth")
 plt.ylabel("Years lived by the item's artist")
+fig = plt.gcf()
+fig.set_size_inches(15, 10)
+plt.show()
+
+sns.lmplot('Artist End Date', 'Covered Area', df, hue='Culture', fit_reg=False)
+plt.title("Year when the artist finished the item VS Area covered by item")
+plt.xlabel("Year of finishing item")
+plt.ylabel("Covered area (CM^2)")
 fig = plt.gcf()
 fig.set_size_inches(15, 10)
 plt.show()
@@ -229,23 +231,6 @@ plt.xlabel("Dimensionality")
 plt.ylabel("Number of items in the dimensionality")
 plt.show()
 
-"""
-# source: https://towardsdatascience.com/using-python-to-create-a-world-map-from-a-list-of-country-names-cd7480d03b10
-def get_continent(col):
-    try:
-        cn_a2_code =  country_name_to_country_alpha2(col)
-    except:
-        cn_a2_code = 'Unknown'
-    try:
-        cn_continent = country_alpha2_to_continent_code(cn_a2_code)
-    except:
-        cn_continent = 'Unknown'
-    return (cn_a2_code, cn_continent)
-
-continent = get_continent(df['Country'])
-print(continent)
-"""
-
 # We have to convert them back to int
 df['Object Begin Date'] = df['Object Begin Date'].astype('Int32')
 df['Object End Date'] = df['Object End Date'].astype('Int32')
@@ -253,9 +238,43 @@ df['Object End Date'] = df['Object End Date'].astype('Int32')
 df['Artist Begin Date'] = df['Artist Begin Date'].astype('Int32')
 df['Artist End Date'] = df['Artist End Date'].astype('Int32')
 
-del df['years_lived_artist']
-del df['years_worked_item']
+# del df['years_lived_artist']
+# del df['years_worked_item']
 
+
+df_new = df[['Artist Display Name']]
+
+unique_names = df_new['Artist Display Name'].unique()
+unique_names = pd.DataFrame(unique_names)
+unique_names['Count'] = 0
+unique_names['Total Covered Area'] = 0
+unique_names['Average Covered Area'] = 0
+
+unique_names['Years Worked Average'] = 0
+unique_names['Years Worked Total'] = 0
+
+unique_names.rename(columns={0: 'Name'}, inplace=True)
+
+unique_names['Works IDs'] = ''
+
+for index_item, item in df.iterrows():
+    for index_artist, artist in unique_names.iterrows():
+
+        if df['Artist Display Name'][index_item] == unique_names['Name'][index_artist]:
+            unique_names['Count'][index_artist] += 1
+            unique_names['Total Covered Area'][index_artist] += df['Covered Area'][index_item]
+            unique_names['Years Worked Total'][index_artist] += df['years_worked_item'][index_item]
+            # unique_names['Works IDs'] += (df['Object ID'][index_item] + '|')
+
+            # unique_names['Works'] = unique_names['Works'].apply(lambda x: x + [df['Object ID'][index_item]])
+
+unique_names['Average Covered Area'] = unique_names.apply(lambda x: x['Total Covered Area'] / x['Count'], axis=1)
+unique_names['Years Worked Average'] = unique_names.apply(lambda x: x['Years Worked Total'] / x['Count'], axis=1)
+
+# keep only the artists with at least 2 paintings at Met
+unique_names = unique_names[unique_names['Count'] > 1]
+
+
+print(unique_names)
 print("----------------------------------------------------")
-
 print(df.head(10))
