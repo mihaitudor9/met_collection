@@ -16,7 +16,7 @@ The project proposal had first to be submitted and accepted, and the final proje
 
 The dataset used in this work was retrieved from https://metmuseum.github.io. and it is known to be one of the messiest datasets available to the public
 
-![Screenshot](14delacroix1-sub-superJumbo.jpg)
+![Screenshot](14delacroix1-sub-superJumbo_edited.jpg)
 
 ---
 
