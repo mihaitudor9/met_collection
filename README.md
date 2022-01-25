@@ -20,11 +20,11 @@ The dataset used in this work was retrieved from https://metmuseum.github.io. an
 
 ---
 
-### A few interesting insights that were obtained using the dataset
+### A few interesting insights that were obtained using the dataset:
 
-#### The American painters being showcased at the Met Museum lived way longer than the average American citizen between 1800 and mid-1900
+#### - The American painters being showcased at the Met Museum lived way longer than the average American citizen between 1800 and mid-1900
 ![Screenshot](life_expectancy.png)
 
 
-#### The American painters being showcased at the Met Museum lived way longer than the average American citizen between 1800 and mid-1900
+#### - The American painters being showcased at the Met Museum lived way longer than the average American citizen between 1800 and mid-1900
 ![Screenshot](most_covered_20_years.png)
