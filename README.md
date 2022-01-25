@@ -2,7 +2,7 @@
 
 ![Screenshot](14delacroix1-sub-superJumbo_edited.png)
 
-Findings ways of improvements of the collection of paintings and drawings in the Metropolitan Museum of Art 
+## Findings ways of improvements of the collection of paintings and drawings in the Metropolitan Museum of Art 
 
 The work conducted in this project was for the Data Analysis (KEN 3450) course of Maastricht University.
 
