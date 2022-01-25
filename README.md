@@ -26,5 +26,9 @@ The dataset used in this work was retrieved from https://metmuseum.github.io. an
 ![Screenshot](life_expectancy.png)
 
 
-#### - According to the Met Collection, 1984 and 1911 were by far the most productive year in terms of the total painted area.
+#### - The American painters being showcased at the Met Museum lived way longer than the average American citizen between 1800 and mid-1900
 ![Screenshot](most_covered_20_years.png)
+
+
+#### - There is a slight increasing trend in the average dimensions of paintings. Therefore, in theory, such a model could be helpful to the museum if it wishes to extend an existing wing or even build a new one to make sure there is enough room for the artwork to be collected in the coming years.
+![Screenshot](increasing_trend.png)
