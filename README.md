@@ -14,3 +14,5 @@ The project proposal had first to be submitted and accepted, and the final proje
 
 
 The dataset used in this work was retrieved from https://metmuseum.github.io.
+
+![Screenshot](14delacroix1-sub-superJumbo.jpg)
