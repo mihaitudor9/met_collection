@@ -1,5 +1,7 @@
 # MetMuseum Dataset 
 
+![Screenshot](14delacroix1-sub-superJumbo_edited.png)
+
 Findings ways of improvements of the collection of paintings and drawings in the Metropolitan Museum of Art 
 
 The work conducted in this project was for the Data Analysis (KEN 3450) course of Maastricht University.
@@ -16,10 +18,8 @@ The project proposal had first to be submitted and accepted, and the final proje
 
 The dataset used in this work was retrieved from https://metmuseum.github.io. and it is known to be one of the messiest datasets available to the public
 
-![Screenshot](14delacroix1-sub-superJumbo_edited.png)
-
 ---
 
-### A few interestin insights that were obtained using the dataset
+### A few interesting insights that were obtained using the dataset
 
 ![Screenshot](life_expectancy.png)
