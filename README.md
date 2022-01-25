@@ -26,5 +26,5 @@ The dataset used in this work was retrieved from https://metmuseum.github.io. an
 ![Screenshot](life_expectancy.png)
 
 
-#### - The American painters being showcased at the Met Museum lived way longer than the average American citizen between 1800 and mid-1900
+#### - According to the Met Collection, 1984 and 1911 were by far the most productive year in terms of the total painted area.
 ![Screenshot](most_covered_20_years.png)
